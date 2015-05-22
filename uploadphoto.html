@@ -1,7 +1,8 @@
 <!doctype html>
 <head>
 <meta charset="utf-8">
-<title>上传头像</title>
+<meta name="renderer" content="webkit">
+<title>Uploading Head Portrait</title>
 </head>
 <style>
 body{margin: 0;padding: 0;background: red;font-family: microsoft yahei}
@@ -13,24 +14,32 @@ div{box-sizing: border-box}
 #temp{float: left;background: white;display: none}
 #zoom{width: 20px;height: 20px;border: 1px dashed #fff;border-right: 0;border-bottom: 0;color: #fff;font-size: 14px;position: absolute;bottom: 0;right: 0;line-height: 18px;text-align: center;cursor: url("larger.png"),pointer}
 #addBtn{width: 171px;height: 41px;background: #303845;border-radius: 3px;margin: 0 auto;padding: 12px 0;cursor: pointer}
-#add{width: 111px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
-#addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:22px auto;line-height: 12px}
-#addBtnBox{position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
+#addBtn:hover{background: #15181d}
+#addBtn:active{box-shadow: inset 4px 4px 4px #040405}
+#add{width: 101px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
+#addBtnBox{width: 204px;position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
+#addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:12px auto;line-height: 12px}
 #uploadModal{width: 551px;padding: 8px 26px 18px;background: white;border-radius: 3px;margin:0 auto}
 #title{margin-top: 10px;border-bottom: 1px solid #dadada;width: 100%;line-height: 38px;font-size: 14px;color: #444;text-align: left;margin-bottom: 15px}
 #file{display: none}
 #pvBox{width: 100%;border-bottom: 1px solid #dadada;height: 90px}
-#pvBox>div{float: left}
-#reload{width: 335px;line-height: 37px;font-size: 14px;color: #fe6d40;cursor: pointer}
-#pv{padding: 3px 0}
+#reload{line-height: 37px;font-size: 14px;cursor: pointer;float: left}
+#reload:hover{color: #fe6d40}
+#pv{padding: 3px 0;float: right}
 #pv>div{width: 84px;line-height: 34px;font-size: 14px;color: #444;float: left}
 #pv>canvas{float: left}
 #btns{margin:21px auto 0;overflow: hidden;width: 260px}
-#btns>button{cursor: pointer;border: 0;padding: 0;margin: 0 21px;width: 88px;height: 36px;line-height: 36px;float: left;font-size: 14px;color: white;border-radius: 3px}
+#btns>button{cursor: pointer;border: 0;padding: 0;margin: 0 21px;width: 88px;height: 36px;line-height: 36px;float: left;font-size: 14px;color: white;border-radius: 3px;font-family: microsoft yahei}
 #btns>button:first-child{background: #fe6d40}
 #btns>button:first-child+button{background: #2f3845}
+#btns>button:first-child:hover{background: #d35c37}
+#btns>button:first-child+button:hover{background: #15191f}
+#btns>button:first-child:active{box-shadow: inset 4px 4px 4px #b95131}
+#btns>button:first-child+button:active{box-shadow: inset 4px 4px 4px #040405}
 #initHidden{display: none}
 #closeX{width: 24px;height: 24px;border-radius: 12px;background: #dadada;float: right;margin-right: -18px;color: #444;font-weight: bold;text-align: center;font-size: 22px;line-height: 21px;cursor: pointer}
+#closeX:hover{background: #bfbebe}
+#closeX:active{box-shadow: inset 2px 2px 4px #a2a2a2}
 </style>
 <script>
 window.onload = function(){
@@ -221,27 +230,27 @@ window.onload = function(){
 <body onselectstart="return false;" style="-moz-user-select:none;">
     <div id="uploadModal">
         <div id="closeX">×</div>
-        <div id="title">头像设置：</div>
+        <div id="title">Head Portrait Setting</div>
         <form method="post" action="">
             <input id="file" type="file">
         </form>
         <div id="photoframe">
             <canvas id="mycanvas" width="500" height="385"></canvas>
             <div id="cut"><div id="zoom">+</div></div>
-            <div id="addBtnBox"><div id="addBtn"><div id="add">添加本地图片</div></div><p>支持JPG、PNG、GIF，大小不超过2M</p></div>
+            <div id="addBtnBox"><div id="addBtn"><div id="add">Add image</div></div><p>Support JPG, PNG and GIF<br>Size shouldn't be larger than 2MB</p></div>
         </div>
         <div id="initHidden">
             <canvas id="temp" width="178" height="178"></canvas>
             <div id="pvBox">
-                <div id="reload">重新上传</div>
+                <div id="reload">Reload</div>
                 <div id="pv">
-                    <div>头像预览</div>
+                    <div>Preview</div>
                     <canvas id="preview" width="70" height="70"></canvas>
                 </div>
             </div>
             <div id="btns">
-                <button id="confirm">确认</button>
-                <button id="cancel">取消</button>
+                <button id="confirm">Confirm</button>
+                <button id="cancel">Cancel</button>
             </div>
         </div>
     </div>
