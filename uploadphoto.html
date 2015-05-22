@@ -1,0 +1,192 @@
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<title>上传头像</title>
+</head>
+<style>
+body{margin: 0;padding: 0;background: red;margin-left: 40px}
+div{box-sizing: border-box}
+#mycanvas{background: #dadada;position: relative}
+#photoframe{position: relative;width: 500px;height: 385px;float: left}
+#cut{width: 178px;height: 178px;border: 1px dashed white;position: absolute;left: 50%;margin-left: -89px;top: 40px;cursor:move;display: none}
+#preview{width: 70px;height: 70px;border: 5px solid #f1f1f1;border-radius: 50px;display: none}
+#temp,#preview{float: left;background: white;margin:0 40px}
+#temp{display: none}
+#zoom{width: 20px;height: 20px;border: 1px dotted #fff;color: #fff;font-size: 14px;position: absolute;bottom: 0;right: 0;line-height: 20px;text-align: center;cursor: url("larger.png"),pointer}
+</style>
+<script>
+window.onload = function(){
+    var ctx = mycanvas.getContext('2d'),
+        pCtx = preview.getContext('2d'),
+        tCtx = temp.getContext('2d'),
+        flag = 0,
+        icWidth = getStyle(cut,'width'),
+        icLeft = getStyle(cut,'left'),
+        icTop = getStyle(cut,'top'),
+        cLeft,cTop,hLeft,hTop,hlDiff,htDiff,imageData,dataUrl,finalUrl;
+    
+    file.onclick = function(e){
+        file.value = null;
+    }
+    file.onchange = function(e){
+        e = e || window.event;
+        ctx.clearRect(0,0,mycanvas.width,mycanvas.height);
+        pCtx.clearRect(0,0,preview.width,preview.height);
+        var files = e.target.files,
+            imgOrNot = /image\/.*/i,
+            reader = new FileReader();
+        
+        if(!files[0].type.match(imgOrNot)){
+            cut.style.display = 'none';
+            alert('请上传正确的图片格式')
+        }else if(files[0].size > 2000000){
+            cut.style.display = 'none';
+            alert('请上传大小不超过2M的图片')   
+        }else{
+            reader.onload = function(){
+                cut.style.display = 'block';
+                preview.style.display = 'block';
+                cut.style.width = icWidth;
+                cut.style.height = icWidth;
+                cut.style.left = icLeft;
+                cut.style.top = icTop;
+                flag = 0;
+                zoom.innerHTML = '+';
+                zoom.style.cursor = 'url("larger.png"),pointer';
+                var img = new Image();
+                img.src = this.result;
+                if(mycanvas.width*img.height/img.width < parseInt(icWidth)){
+                    alert('图片宽高比不能超过' + (mycanvas.width/parseInt(icWidth)).toFixed(1) + ',请更换图片');
+                    file.value = null;
+                    return
+                }else{
+                    ctx.drawImage(img,0,0,mycanvas.width,mycanvas.width*img.height/img.width);                
+                    alpha(0,0,mycanvas.width,mycanvas.width*img.height/img.width,77);
+                    alpha(cut.offsetLeft,cut.offsetTop,cut.offsetWidth,cut.offsetHeight,255);
+                    pPreview(cut);
+
+                    cut.onmousedown = function(e){
+                        cLeft = parseInt(getStyle(this,'left'));
+                        cTop = parseInt(getStyle(this,'top'));
+                        hLeft = e.clientX;
+                        hTop = e.clientY;
+
+                        this.onmousemove = cMove;
+
+                        function cMove(e){
+                            hlDiff = e.clientX - hLeft;
+                            htDiff = e.clientY - hTop;
+                            if(hlDiff == 0 && htDiff == 0){
+                                return
+                            }else{                            
+                                alpha(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight,77);
+
+                                this.style.left = cLeft + hlDiff + 'px';
+                                this.style.top = cTop + htDiff + 'px';
+
+                                if(this.offsetLeft >= mycanvas.width - this.offsetWidth){
+                                    this.style.left = mycanvas.width - (this.offsetWidth + parseInt(getStyle(this,'marginLeft'))) + 'px'
+                                }else if(this.offsetLeft <= 0){
+                                    this.style.left = -parseInt(getStyle(this,'marginLeft')) + 'px'
+                                }
+
+                                if(this.offsetTop >= mycanvas.width*img.height/img.width - this.offsetHeight){
+                                    this.style.top = mycanvas.width*img.height/img.width - this.offsetHeight + 'px';
+                                }else if(this.offsetTop <= 0){
+                                    this.style.top = '0px';
+                                }
+
+                                alpha(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight,255);
+                            }   
+                        }
+
+                        this.onmouseout = function(e){
+                            this.onmousemove = null
+                        }
+
+                        this.onmouseup = function(e){
+                            this.onmousemove = null;
+                            pPreview(this)
+                        }
+                    }
+
+                    //截图框缩放功能
+                    zoom.onclick = zZoom;
+
+                    function zZoom(e){
+                        if(mycanvas.width*img.height/img.width < parseInt(icWidth) * 1.5){
+                            return
+                        }else if(flag == 0){
+                            cut.style.width = parseInt(icWidth) * 1.5 + 'px';
+                            cut.style.height = cut.style.width;
+                            this.innerHTML = '-';
+                            this.style.cursor = 'url("smaller.png"),pointer';
+                            if(cut.offsetLeft + cut.offsetWidth - mycanvas.width > 0){
+                                cut.style.left = mycanvas.width - (cut.offsetWidth + parseInt(getStyle(cut,'marginLeft'))) + 'px'
+                            }
+                            if(cut.offsetTop + cut.offsetHeight - mycanvas.width*img.height/img.width > 0){
+                                cut.style.top = mycanvas.width*img.height/img.width - cut.offsetHeight + 'px';
+                            }
+                            flag = 1
+                        }else{
+                            alpha(cut.offsetLeft,cut.offsetTop,cut.offsetWidth,cut.offsetHeight,77);
+                            cut.style.width = icWidth;
+                            cut.style.height = cut.style.width;
+                            this.innerHTML = '+';
+                            this.style.cursor = 'url("larger.png"),pointer';
+                            flag = 0
+                        };
+                        alpha(cut.offsetLeft,cut.offsetTop,cut.offsetWidth,cut.offsetHeight,255);
+                        pPreview(cut)
+                    }
+
+                    function pPreview(obj){
+                        pCtx.clearRect(0,0,preview.width,preview.height);
+                        temp.width = obj.offsetWidth + '';
+                        temp.height = temp.width;
+                        tCtx.putImageData(imageData,0,0);
+                        dataUrl = temp.toDataURL();
+                        var preImg = new Image();
+                        preImg.src = dataUrl;
+                        pCtx.drawImage(preImg,0,0,preview.width,preview.height);
+                        finalUrl = preview.toDataURL();
+                        return finalUrl
+                    }
+
+                    function alpha(x,y,width,height,a){
+                        imageData = ctx.getImageData(x,y,width,height);
+                        //imageData = ctx.getImageData(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight);
+                        for(var i=0; i<imageData.data.length/4; i++){
+                            imageData.data[i*4+3] = a;
+                        }
+                        ctx.putImageData(imageData,x,y);
+                    }
+                }  
+            } 
+            reader.readAsDataURL(files[0])
+        }
+    }
+
+        //兼容currentStyle和getComputedStyle代码
+        function getStyle(obj,attr){
+            if(obj.currentStyle){
+                return obj.currentStyle[attr];
+            }
+            else{
+                return getComputedStyle(obj,false)[attr];
+            }
+        }
+}
+</script>
+<body onselectstart="return false;" style="-moz-user-select:none;">
+    <form method="post" action="">
+        <input id="file" type="file">
+    </form>
+    <div id="photoframe" draggable="false">
+        <canvas id="mycanvas" width="500" height="385"></canvas>
+        <div id="cut"><div id="zoom">+</div></div>
+    </div>
+    <canvas id="temp" width="178" height="178"></canvas>
+    <canvas id="preview" width="70" height="70"></canvas>
+</body>
+</html>
