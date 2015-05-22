@@ -4,7 +4,7 @@
 <title>上传头像</title>
 </head>
 <style>
-body{margin: 0;padding: 0;background: red;margin-left: 40px}
+body{margin: 0;padding: 0;background: red;margin-left: 40px;font-family: microsoft yahei}
 div{box-sizing: border-box}
 #mycanvas{background: #dadada;position: relative}
 #photoframe{position: relative;width: 500px;height: 385px;float: left}
@@ -13,9 +13,15 @@ div{box-sizing: border-box}
 #temp,#preview{float: left;background: white;margin:0 40px}
 #temp{display: none}
 #zoom{width: 20px;height: 20px;border: 1px dotted #fff;color: #fff;font-size: 14px;position: absolute;bottom: 0;right: 0;line-height: 20px;text-align: center;cursor: url("larger.png"),pointer}
+#addBtn{width: 171px;height: 41px;background: #303845;border-radius: 3px;margin: 0 auto;padding: 12px 0;cursor: pointer}
+#add{width: 111px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
+#addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:22px auto;line-height: 12px}
+#addBtnBox{position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
+#uploadModal{width: 551px;height: 636px;padding: 18px 26px}
 </style>
 <script>
 window.onload = function(){
+    
     var ctx = mycanvas.getContext('2d'),
         pCtx = preview.getContext('2d'),
         tCtx = temp.getContext('2d'),
@@ -24,6 +30,10 @@ window.onload = function(){
         icLeft = getStyle(cut,'left'),
         icTop = getStyle(cut,'top'),
         cLeft,cTop,hLeft,hTop,hlDiff,htDiff,imageData,dataUrl,finalUrl;
+    
+    addBtn.onclick = function(e){
+        file.click()
+    }
     
     file.onclick = function(e){
         file.value = null;
@@ -44,8 +54,6 @@ window.onload = function(){
             alert('请上传大小不超过2M的图片')   
         }else{
             reader.onload = function(){
-                cut.style.display = 'block';
-                preview.style.display = 'block';
                 cut.style.width = icWidth;
                 cut.style.height = icWidth;
                 cut.style.left = icLeft;
@@ -58,8 +66,14 @@ window.onload = function(){
                 if(mycanvas.width*img.height/img.width < parseInt(icWidth)){
                     alert('图片宽高比不能超过' + (mycanvas.width/parseInt(icWidth)).toFixed(1) + ',请更换图片');
                     file.value = null;
+                    addBtnBox.style.display = 'block';
+                    cut.style.display = 'none';
+                    preview.style.display = 'none';
                     return
                 }else{
+                    addBtnBox.style.display = 'none';
+                    cut.style.display = 'block';
+                    preview.style.display = 'block';
                     ctx.drawImage(img,0,0,mycanvas.width,mycanvas.width*img.height/img.width);                
                     alpha(0,0,mycanvas.width,mycanvas.width*img.height/img.width,77);
                     alpha(cut.offsetLeft,cut.offsetTop,cut.offsetWidth,cut.offsetHeight,255);
@@ -179,14 +193,18 @@ window.onload = function(){
 }
 </script>
 <body onselectstart="return false;" style="-moz-user-select:none;">
-    <form method="post" action="">
-        <input id="file" type="file">
-    </form>
-    <div id="photoframe" draggable="false">
-        <canvas id="mycanvas" width="500" height="385"></canvas>
-        <div id="cut"><div id="zoom">+</div></div>
+    <div id="uploadModal">
+        <div id="title">头像设置</div>
+        <form method="post" action="">
+            <input id="file" type="file">
+        </form>
+        <div id="photoframe">
+            <canvas id="mycanvas" width="500" height="385"></canvas>
+            <div id="cut"><div id="zoom">+</div></div>
+            <div id="addBtnBox"><div id="addBtn"><div id="add">添加本地图片</div></div><p>支持JPG、PNG、GIF，大小不超过2M</p></div>
+        </div>
+        <canvas id="temp" width="178" height="178"></canvas>
+        <canvas id="preview" width="70" height="70"></canvas>
     </div>
-    <canvas id="temp" width="178" height="178"></canvas>
-    <canvas id="preview" width="70" height="70"></canvas>
 </body>
 </html>
