@@ -7,3 +7,12 @@ Its uploading function is made by HTML5 FileReader, so it is not supported by ie
 
 Its uploading function is made by HTML5 FileReader, so it is not supported by ie8-.
 Its uploading function is made by HTML5 FileReader, so it is not supported by ie8-.
+
+
+success!!!
+
+success!!!
+
+success!!!
+
+success!!!
