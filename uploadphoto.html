@@ -1,11 +1,12 @@
 <!doctype html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui"/>
 <meta name="renderer" content="webkit">
-<title>上传头像</title>
+<title>Upload Headportrait</title>
 </head>
 <style>
-body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei}
+body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei;position: relative}
 div{box-sizing: border-box}
 #headimg{width: 120px;height: 120px;margin-left: 100px;border-radius: 60px;border: 2px solid #404040}  
 #mycanvas{background: #dadada;position: relative}
@@ -19,13 +20,14 @@ div{box-sizing: border-box}
 #addBtn:active{box-shadow: inset 4px 4px 4px #040405}
 #add{width: 111px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
 #addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:22px auto;line-height: 12px}
-#addBtnBox{position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
+#addBtnBox{position: absolute;left: 50%;margin-left: -130px;top: 142px;text-align: center}
 #modalBox{
     position: absolute;
     top: -106px;
     left: 0;
     z-index: 0;
     width: 100%;
+    display: none
 }
 #uploadModal{
     width: 551px;
@@ -41,7 +43,7 @@ div{box-sizing: border-box}
     z-index: -1;
     width: 100%;
     height: inherit;
-    background-color: rgba(0,0,0,.5)
+    background-color: rgba(0,0,0,.5);
 }
 #title{margin-top: 10px;border-bottom: 1px solid #dadada;width: 100%;line-height: 38px;font-size: 14px;color: #444;text-align: left;margin-bottom: 15px}
 #file{display: none}
@@ -63,6 +65,7 @@ div{box-sizing: border-box}
 #closeX{width: 24px;height: 24px;border-radius: 12px;background: #dadada;float: right;margin-right: -18px;color: #444;font-weight: bold;text-align: center;font-size: 22px;line-height: 21px;cursor: pointer}
 #closeX:hover{background: #bfbebe}
 #closeX:active{box-shadow: inset 2px 2px 4px #a2a2a2}  
+    
 @media all and (max-width:360px){
     #uploadModal{
         width: 94%;
@@ -101,11 +104,24 @@ window.onload = function(){
     }
     
     cancel.onclick = function(e){
-        modalBox.style.zIndex = '0'
+        modalBox.style.display = 'none'
     }
     
     closeX.onclick = function(e){
-        modalBox.style.zIndex = '0'
+        modalBox.style.display = 'none'
+    }
+        
+    headimg.onclick = function(){
+        var _height = window.screen.height;
+        if(window.screen.width <= 360){
+            mycanvas.setAttribute('width','286');
+            mycanvas.setAttribute('height','220');
+        }
+        modalBox.style.display = 'block';
+        modalBox.style.height = _height + 'px';
+        shield.onclick = function(){
+            modalBox.style.display = 'none'
+        }
     }
     
     file.onclick = function(e){
@@ -121,10 +137,10 @@ window.onload = function(){
         
         if(!files[0].type.match(imgOrNot)){
             cut.style.display = 'none';
-            alert('请上传正确的图片格式')
-        }else if(files[0].size > 3000000){
+            alert('Please upload a photo width correct format!')
+        }else if(files[0].size > 6300000){
             cut.style.display = 'none';
-            alert('请上传大小不超过3M的图片')   
+            alert('Please upload a photo with size less than 6M!')   
         }else{
             reader.onload = function(){
                 cut.style.width = icWidth;
@@ -137,7 +153,7 @@ window.onload = function(){
                 var img = new Image();
                 img.src = this.result;
                 if(mycanvas.width*img.height/img.width < parseInt(icWidth)){
-                    alert('图片宽高比不能超过' + (mycanvas.width/parseInt(icWidth)).toFixed(1) + ',请更换图片');
+                    alert('The width/height ratio of photo should be less than ' + (mycanvas.width/parseInt(icWidth)).toFixed(1) + '.Please upload another photo');
                     file.value = null;
                     addBtnBox.style.display = 'block';
                     cut.style.display = 'none';
@@ -302,7 +318,7 @@ if(img.height*mycanvas.width/img.width <= mycanvas.height){
                         finalUrl = preview.toDataURL();
                         //return finalUrl;
                         confirmBtn.onclick = function(e){
-                            modalBox.style.zIndex = '0'
+                            modalBox.style.display = 'none';
                             headimg.style.backgroundImage = 'url(' + finalUrl + ')';
                             headimg.style.backgroundSize = 'cover';
                             headimg.style.backgroundPosition = 'center center'           
@@ -338,27 +354,27 @@ if(img.height*mycanvas.width/img.width <= mycanvas.height){
     <div id="modalBox">
         <div id="uploadModal">
             <div id="closeX">×</div>
-            <div id="title">头像设置：</div>
+            <div id="title">Head Portrait Setting</div>
             <form method="post" action="">
                 <input id="file" type="file">
             </form>
             <div id="photoframe">
                 <canvas id="mycanvas" width="500" height="385"></canvas>
                 <div id="cut"><div id="zoom">+</div></div>
-                <div id="addBtnBox"><div id="addBtn"><div id="add">添加本地图片</div></div><p>支持JPG、PNG、GIF，大小不超过2M</p></div>
+                <div id="addBtnBox"><div id="addBtn"><div id="add">Upload</div></div><p>Support JPG,PNG,GIF that isn't larger than 6M.</p></div>
             </div>
             <div id="initHidden">
                 <canvas id="temp" width="178" height="178"></canvas>
                 <div id="pvBox">
-                    <div id="reload">重新上传</div>
+                    <div id="reload">Re-upload</div>
                     <div id="pv">
-                        <div>头像预览</div>
+                        <div>Preview</div>
                         <canvas id="preview" width="70" height="70"></canvas>
                     </div>
                 </div>
                 <div id="btns">
-                    <button id="confirmBtn">确认</button>
-                    <button id="cancel">取消</button>
+                    <button id="confirmBtn">Confirm</button>
+                    <button id="cancel">Cancel</button>
                 </div>
             </div>
         </div>
