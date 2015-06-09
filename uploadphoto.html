@@ -8,9 +8,9 @@
 <style>
 body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei;position: relative}
 div{box-sizing: border-box}
-#headimg{width: 120px;height: 120px;margin-left: 100px;border-radius: 60px;border: 2px solid #404040}  
+#headimg{width: 120px;height: 120px;margin:0 auto;border-radius: 60px;border: 2px solid #404040;cursor: pointer}  
 #mycanvas{background: #dadada;position: relative}
-#photoframe{position: relative;width: 500px;height: 385px}
+#photoframe{position: relative;width: 500px}
 #cut{width: 178px;height: 178px;border: 1px dashed white;position: absolute;left: 50%;margin-left: -89px;top: 40px;cursor:move;display: none}
 #preview{width: 70px;height: 70px;border: 5px solid #dadada;border-radius: 50px}
 #temp{float: left;background: white;display: none}
@@ -62,9 +62,7 @@ div{box-sizing: border-box}
 #btns>button:first-child:active{box-shadow: inset 4px 4px 4px #b95131}
 #btns>button:first-child+button:active{box-shadow: inset 4px 4px 4px #040405}
 #initHidden{display: none}
-#closeX{width: 24px;height: 24px;border-radius: 12px;background: #dadada;float: right;margin-right: -18px;color: #444;font-weight: bold;text-align: center;font-size: 22px;line-height: 21px;cursor: pointer}
-#closeX:hover{background: #bfbebe}
-#closeX:active{box-shadow: inset 2px 2px 4px #a2a2a2}  
+#closeX{width: 24px;height: 24px;float: right;margin-right: -18px;color: #444;text-align: center;font-size: 24px;line-height: 24px;cursor: pointer}
     
 @media all and (max-width:360px){
     #uploadModal{
@@ -79,12 +77,18 @@ div{box-sizing: border-box}
         margin-left: -50px
     }
     #addBtnBox{
-        top: 76px
+        top: 76px;
+        margin-left: -126px
     }
 }
 </style>
 <script>
 window.onload = function(){
+    
+    if(window.screen.width <= 360){
+        mycanvas.setAttribute('width','286');
+        mycanvas.setAttribute('height','220');
+    }
     
     var ctx = mycanvas.getContext('2d'),
         pCtx = preview.getContext('2d'),
@@ -113,10 +117,6 @@ window.onload = function(){
         
     headimg.onclick = function(){
         var _height = window.screen.height;
-        if(window.screen.width <= 360){
-            mycanvas.setAttribute('width','286');
-            mycanvas.setAttribute('height','220');
-        }
         modalBox.style.display = 'block';
         modalBox.style.height = _height + 'px';
         shield.onclick = function(){
