@@ -6,7 +6,7 @@
 <title>Upload Headportrait</title>
 </head>
 <style>
-body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei;position: relative}
+body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei;position: relative;overflow: hidden}
 div{box-sizing: border-box}
 #headimg{width: 120px;height: 120px;margin:0 auto;border-radius: 60px;border: 2px solid #404040;cursor: pointer}  
 #mycanvas{background: #dadada;position: relative}
@@ -84,8 +84,10 @@ div{box-sizing: border-box}
 </style>
 <script>
 window.onload = function(){
+
+    var clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
     
-    if(window.screen.width <= 360){
+    if(clientWidth <= 360){
         mycanvas.setAttribute('width','286');
         mycanvas.setAttribute('height','220');
     }
@@ -117,6 +119,7 @@ window.onload = function(){
         
     headimg.onclick = function(){
         var _height = window.screen.height;
+        /*var _height = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);*/
         modalBox.style.display = 'block';
         modalBox.style.height = _height + 'px';
         shield.onclick = function(){
