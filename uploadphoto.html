@@ -2,11 +2,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="renderer" content="webkit">
-<title>Uploading Head Portrait</title>
+<title>上传头像</title>
 </head>
 <style>
-body{margin: 0;padding: 0;background: red;font-family: microsoft yahei}
+body{margin: 0;padding: 0;background: gray;font-family: microsoft yahei}
 div{box-sizing: border-box}
+#headimg{width: 120px;height: 120px;margin-left: 100px;border-radius: 60px;border: 2px solid #404040}  
 #mycanvas{background: #dadada;position: relative}
 #photoframe{position: relative;width: 500px;height: 385px}
 #cut{width: 178px;height: 178px;border: 1px dashed white;position: absolute;left: 50%;margin-left: -89px;top: 40px;cursor:move;display: none}
@@ -16,15 +17,37 @@ div{box-sizing: border-box}
 #addBtn{width: 171px;height: 41px;background: #303845;border-radius: 3px;margin: 0 auto;padding: 12px 0;cursor: pointer}
 #addBtn:hover{background: #15181d}
 #addBtn:active{box-shadow: inset 4px 4px 4px #040405}
-#add{width: 101px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
-#addBtnBox{width: 204px;position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
-#addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:12px auto;line-height: 12px}
-#uploadModal{width: 551px;padding: 8px 26px 18px;background: white;border-radius: 3px;margin:0 auto}
+#add{width: 111px;height: 18px;background: url(../headportrait/add.png) left center no-repeat;font-size: 14px;color: white;background-size: 18px 18px;margin: 0 auto;padding-left: 27px;line-height: 18px}
+#addBtnBox>p{font-size: 12px;color: #8d8d8d;margin:22px auto;line-height: 12px}
+#addBtnBox{position: absolute;left: 50%;margin-left: -102px;top: 142px;text-align: center}
+#modalBox{
+    position: absolute;
+    top: -106px;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+}
+#uploadModal{
+    width: 551px;
+    padding: 8px 26px 18px;
+    background: white;
+    border-radius: 3px;
+    margin: 140px auto
+}
+#shield{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: inherit;
+    background-color: rgba(0,0,0,.5)
+}
 #title{margin-top: 10px;border-bottom: 1px solid #dadada;width: 100%;line-height: 38px;font-size: 14px;color: #444;text-align: left;margin-bottom: 15px}
 #file{display: none}
 #pvBox{width: 100%;border-bottom: 1px solid #dadada;height: 90px}
-#reload{line-height: 37px;font-size: 14px;cursor: pointer;float: left}
-#reload:hover{color: #fe6d40}
+#reload{line-height: 37px;font-size: 14px;color: #fe6d40;cursor: pointer;float: left}
+#reload:hover{color: #d35c37}
 #pv{padding: 3px 0;float: right}
 #pv>div{width: 84px;line-height: 34px;font-size: 14px;color: #444;float: left}
 #pv>canvas{float: left}
@@ -39,7 +62,23 @@ div{box-sizing: border-box}
 #initHidden{display: none}
 #closeX{width: 24px;height: 24px;border-radius: 12px;background: #dadada;float: right;margin-right: -18px;color: #444;font-weight: bold;text-align: center;font-size: 22px;line-height: 21px;cursor: pointer}
 #closeX:hover{background: #bfbebe}
-#closeX:active{box-shadow: inset 2px 2px 4px #a2a2a2}
+#closeX:active{box-shadow: inset 2px 2px 4px #a2a2a2}  
+@media all and (max-width:360px){
+    #uploadModal{
+        width: 94%;
+    }
+    #photoframe{
+        width: 100%
+    }
+    #cut{
+        width:100px;
+        height: 100px;
+        margin-left: -50px
+    }
+    #addBtnBox{
+        top: 76px
+    }
+}
 </style>
 <script>
 window.onload = function(){
@@ -62,11 +101,11 @@ window.onload = function(){
     }
     
     cancel.onclick = function(e){
-        uploadModal.style.display = 'none'
+        modalBox.style.zIndex = '0'
     }
     
     closeX.onclick = function(e){
-        uploadModal.style.display = 'none'
+        modalBox.style.zIndex = '0'
     }
     
     file.onclick = function(e){
@@ -83,9 +122,9 @@ window.onload = function(){
         if(!files[0].type.match(imgOrNot)){
             cut.style.display = 'none';
             alert('请上传正确的图片格式')
-        }else if(files[0].size > 2000000){
+        }else if(files[0].size > 3000000){
             cut.style.display = 'none';
-            alert('请上传大小不超过2M的图片')   
+            alert('请上传大小不超过3M的图片')   
         }else{
             reader.onload = function(){
                 cut.style.width = icWidth;
@@ -138,13 +177,21 @@ window.onload = function(){
                                 }else if(this.offsetLeft <= 0){
                                     this.style.left = -parseInt(getStyle(this,'marginLeft')) + 'px'
                                 }
-
-                                if(this.offsetTop >= mycanvas.width*img.height/img.width - this.offsetHeight){
+                                
+                                if(img.height*mycanvas.width/img.width <= mycanvas.height){
+                                    if(this.offsetTop >= mycanvas.width*img.height/img.width - this.offsetHeight){
                                     this.style.top = mycanvas.width*img.height/img.width - this.offsetHeight + 'px';
-                                }else if(this.offsetTop <= 0){
+                                }
+                                }else{
+                                    if(this.offsetTop >= mycanvas.height - this.offsetHeight){
+                                    this.style.top = mycanvas.height - this.offsetHeight + 'px';
+                                }       
+                                }
+                                
+                                if(this.offsetTop <= 0){
                                     this.style.top = '0px';
                                 }
-
+                                
                                 alpha(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight,255);
                             }   
                         }
@@ -157,6 +204,58 @@ window.onload = function(){
                             this.onmousemove = null;
                             pPreview(this)
                         }
+                    }
+                    
+                    cut.ontouchstart= function(e){
+                        cLeft = parseInt(getStyle(this,'left'));
+                        cTop = parseInt(getStyle(this,'top'));
+                        var touch = e.touches[0],
+                            initialX = touch.clientX,
+                            initialY = touch.clientY;
+                        
+                        this.ontouchmove = function(e){
+                            e.preventDefault();
+                            if (!event.touches.length) return;
+                            var touch = event.touches[0];
+                            var diffX = touch.clientX - initialX,
+                                diffY = touch.clientY - initialY;
+                            
+                            if(diffX == 0 && diffY == 0){
+                                return
+                            }else{                           
+                                alpha(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight,77);
+
+                                this.style.left = cLeft + diffX + 'px';
+                                this.style.top = cTop + diffY + 'px';
+
+                                if(this.offsetLeft >= mycanvas.width - this.offsetWidth){
+                                    this.style.left = mycanvas.width - (this.offsetWidth + parseInt(getStyle(this,'marginLeft'))) + 'px'
+                                }else if(this.offsetLeft <= 0){
+                                    this.style.left = -parseInt(getStyle(this,'marginLeft')) + 'px'
+                                }
+
+if(img.height*mycanvas.width/img.width <= mycanvas.height){
+                                    if(this.offsetTop >= mycanvas.width*img.height/img.width - this.offsetHeight){
+                                    this.style.top = mycanvas.width*img.height/img.width - this.offsetHeight + 'px';
+                                }
+                                }else{
+                                    if(this.offsetTop >= mycanvas.height - this.offsetHeight){
+                                    this.style.top = mycanvas.height - this.offsetHeight + 'px';
+                                }       
+                                }
+                                
+                                if(this.offsetTop <= 0){
+                                    this.style.top = '0px';
+                                }
+
+                                alpha(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight,255);
+                                
+                            this.ontouchend = function(e){
+                                this.ontouchmove = null;
+                                pPreview(this)
+                            }
+                        }
+                    }
                     }
 
                     //截图框缩放功能
@@ -175,6 +274,8 @@ window.onload = function(){
                             }
                             if(cut.offsetTop + cut.offsetHeight - mycanvas.width*img.height/img.width > 0){
                                 cut.style.top = mycanvas.width*img.height/img.width - cut.offsetHeight + 'px';
+                            }else if(cut.offsetTop + cut.offsetHeight - mycanvas.height > 0){
+                                cut.style.top = mycanvas.height - cut.offsetHeight + 'px';
                             }
                             flag = 1
                         }else{
@@ -199,12 +300,17 @@ window.onload = function(){
                         preImg.src = dataUrl;
                         pCtx.drawImage(preImg,0,0,preview.width,preview.height);
                         finalUrl = preview.toDataURL();
-                        return finalUrl
+                        //return finalUrl;
+                        confirmBtn.onclick = function(e){
+                            modalBox.style.zIndex = '0'
+                            headimg.style.backgroundImage = 'url(' + finalUrl + ')';
+                            headimg.style.backgroundSize = 'cover';
+                            headimg.style.backgroundPosition = 'center center'           
+                        }
                     }
 
                     function alpha(x,y,width,height,a){
                         imageData = ctx.getImageData(x,y,width,height);
-                        //imageData = ctx.getImageData(this.offsetLeft,this.offsetTop,this.offsetWidth,this.offsetHeight);
                         for(var i=0; i<imageData.data.length/4; i++){
                             imageData.data[i*4+3] = a;
                         }
@@ -228,31 +334,35 @@ window.onload = function(){
 }
 </script>
 <body onselectstart="return false;" style="-moz-user-select:none;">
-    <div id="uploadModal">
-        <div id="closeX">×</div>
-        <div id="title">Head Portrait Setting</div>
-        <form method="post" action="">
-            <input id="file" type="file">
-        </form>
-        <div id="photoframe">
-            <canvas id="mycanvas" width="500" height="385"></canvas>
-            <div id="cut"><div id="zoom">+</div></div>
-            <div id="addBtnBox"><div id="addBtn"><div id="add">Add image</div></div><p>Support JPG, PNG and GIF<br>Size shouldn't be larger than 2MB</p></div>
-        </div>
-        <div id="initHidden">
-            <canvas id="temp" width="178" height="178"></canvas>
-            <div id="pvBox">
-                <div id="reload">Reload</div>
-                <div id="pv">
-                    <div>Preview</div>
-                    <canvas id="preview" width="70" height="70"></canvas>
+    <div id="headimg"></div>
+    <div id="modalBox">
+        <div id="uploadModal">
+            <div id="closeX">×</div>
+            <div id="title">头像设置：</div>
+            <form method="post" action="">
+                <input id="file" type="file">
+            </form>
+            <div id="photoframe">
+                <canvas id="mycanvas" width="500" height="385"></canvas>
+                <div id="cut"><div id="zoom">+</div></div>
+                <div id="addBtnBox"><div id="addBtn"><div id="add">添加本地图片</div></div><p>支持JPG、PNG、GIF，大小不超过2M</p></div>
+            </div>
+            <div id="initHidden">
+                <canvas id="temp" width="178" height="178"></canvas>
+                <div id="pvBox">
+                    <div id="reload">重新上传</div>
+                    <div id="pv">
+                        <div>头像预览</div>
+                        <canvas id="preview" width="70" height="70"></canvas>
+                    </div>
+                </div>
+                <div id="btns">
+                    <button id="confirmBtn">确认</button>
+                    <button id="cancel">取消</button>
                 </div>
             </div>
-            <div id="btns">
-                <button id="confirm">Confirm</button>
-                <button id="cancel">Cancel</button>
-            </div>
         </div>
+        <div id="shield"></div>
     </div>
 </body>
 </html>
